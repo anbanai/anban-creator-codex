@@ -77,7 +77,7 @@ Expected: 6 subagents listed (wechatarticle, seednote, designer, live-slicer, vi
 $anban-setup
 ```
 
-Expected: the anban-setup skill runs `list_projects` and returns your configured projects. If it fails, your `ANBAN_API_KEY` is missing or invalid.
+Expected: the anban-setup skill first prepares the local video tool, then runs `list_projects` and returns your configured projects. If it fails, your `ANBAN_API_KEY` is missing or invalid.
 
 ## Usage
 
