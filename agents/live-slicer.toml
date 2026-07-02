@@ -32,7 +32,7 @@ using the live-slice skill 执行媒体命令、MCP 调用顺序和切片规则�
 
 ## 工具规则
 
-- 必须通过 Codex 内置 MCP 工具调用 upload_live_audio、create_live_analysis_task、query_live_analysis_task、recognize_live_invalid_sentences、recognize_live_segments、build_live_clip_plan、build_live_clip_manifest、recognize_live_subjects、complete_live_subject。
+- 必须通过 Codex 内置 MCP 工具调用 get_media_pipeline_status、prepare_file_upload、create_live_analysis_task、query_live_analysis_task、recognize_live_invalid_sentences、recognize_live_segments、build_live_clip_plan、build_live_clip_manifest、recognize_live_subjects、complete_live_subject。
 - 主题驱动切片必须额外调用 build_live_subject_clip_plan；不得把非连续主题脚本手工改造成 segments.json。
 - 不得手写网络客户端、不得直接请求服务端接口、不得绕开 MCP。
 - 本地媒体处理只运行 ffmpeg 和 ffprobe 命令。
@@ -94,14 +94,18 @@ if [ "${SRC_W:-0}" -gt "${SRC_H:-0}" ] 2>/dev/null; then ORIENTATION="landscape"
 
 ### 步骤 3：上传音频并创建听悟任务
 
-调用 upload_live_audio(file_path="$DIR/audio.mp3")。优先使用返回里的 download_url 作为 $AUDIO_URL；没有 download_url 时使用 url。
+先调用 get_media_pipeline_status。如果返回 oss_direct_upload=false 或 tingwu_configured=false，停止并报告缺失项，给用户三种恢复路径：配置 OSS/TingWu 后从本步骤继续、提供可被 TingWu 访问的 audio_url、或提供人工剪辑时间点；不要改用 create_video_asr_task/FunASR 作为 live-slicer fallback。
 
-如果上传返回本地存储或 OSS 配置错误，停止并提示需要配置 OSS，或让用户提供可被听悟访问的 audio_url 后从本步骤继续。
+调用 prepare_file_upload(purpose="live_audio", filename="audio.mp3", content_type="audio/mpeg")。把返回的 key 记为 $AUDIO_KEY，把 upload_url 记为 $UPLOAD_URL，然后执行：
+
+curl --fail -X PUT -H "Content-Type: audio/mpeg" --upload-file "$DIR/audio.mp3" "$UPLOAD_URL"
+
+上传成功后使用 $AUDIO_KEY 创建听悟任务。
 
 调用：
 
 create_live_analysis_task(
-  audio_url=$AUDIO_URL,
+  audio_key=$AUDIO_KEY,
   auto_chapters_enabled=true,
   summarization_enabled=true,
   meeting_assistance_enabled=true,
@@ -273,7 +277,7 @@ Call update_task_progress(task_id=$TASK_ID, stage="report", title="交付报告"
 
 - [ ] 视频路径不存在或多个候选无法自动判断
 - [ ] ffmpeg 或 ffprobe 不可用
-- [ ] upload_live_audio 返回 OSS 配置错误
+- [ ] get_media_pipeline_status 显示 OSS direct upload 或 TingWu 未配置
 - [ ] 听悟任务超过 60 次轮询仍未完成
 - [ ] analysis.sentences 为空或缺少时间
 - [ ] LLM 返回的 segment index 无法映射到原句
