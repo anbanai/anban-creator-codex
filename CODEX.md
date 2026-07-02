@@ -89,7 +89,7 @@ Lifecycle hooks for quality verification. **Plugin-bundled hooks are not trusted
 - **Image reference chain**: First image establishes visual style; subsequent images use the first as reference to maintain consistency. For line-art coloring, current `generate_image` is best-effort reference-image generation, not a guaranteed line-preserving colorize tool.
 - **Skill references**: Subagents invoke skills via `using the <skill-name> skill` phrasing, not the Skill tool.
 - **Content is Chinese**: All generated content targets Chinese social media platforms. Prohibited words lists (违禁词) are in `references/prohibited-words.md`.
-- **Video media dependency**: `live-slicer`, `live-slice`, and `video-use` require local `ffmpeg` and `ffprobe`; `video-use` uses OpenAI-compatible FunASR MCP tools for word-level ASR.
+- **Video media dependency**: `live-slicer`, `live-slice`, and `video-use` require local `ffmpeg` and `ffprobe`; `video-use` uses Aliyun FunASR HTTP MCP tools for word-level ASR.
 - **Subagent invocation**: Codex subagents do NOT auto-spawn. To run a full pipeline, the user must explicitly invoke: "use the wechatarticle subagent to write an article about X" or "delegate to designer: colorize line art at /path".
 
 ## Modifying This Plugin

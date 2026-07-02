@@ -6,7 +6,7 @@ Professional **WeChat** and **Seednote (种草笔记)** content creation toolkit
 
 - **24 auto-discovered skills** (SKILL.md format): content writing, WeChat article assembly, Seednote viral analysis, live video slicing, video-use editing, line-art coloring, short-video cover replication, portrait pose variants, SEO, e-commerce product imagery, and more.
 - **6 native Codex subagents**: end-to-end orchestrators (10,000+ word pipelines each) for the workflows above.
-- **MCP integration**: connects to the anban-creator HTTP MCP server for project management, image generation, WeChat publishing, TingWu/OpenAI-compatible FunASR transcription, and FFmpeg-driven clip assembly.
+- **MCP integration**: connects to the anban-creator HTTP MCP server for project management, image generation, WeChat publishing, TingWu/Aliyun FunASR HTTP transcription, and FFmpeg-driven clip assembly.
 - **Lifecycle hooks**: `SubagentStop` (per-agent delivery summary) + `Stop` (generic QA gate).
 
 ## Prerequisites
