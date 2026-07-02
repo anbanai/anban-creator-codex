@@ -60,7 +60,19 @@ if [[ ! -f "$PLUGIN_ROOT/skills/article/SKILL.md" ]]; then
   echo "[install-subagents] Or set ANBAN_PLUGIN_ROOT to point at the installed plugin directory." >&2
 fi
 
-# --- 2. Copy subagent TOMLs into ~/.codex/agents/ -------------------------
+# --- 2. Bootstrap plugin-local binaries ----------------------------------
+
+BOOTSTRAP="$PLUGIN_ROOT/scripts/bootstrap.sh"
+if [[ -x "$BOOTSTRAP" ]]; then
+  echo "[install-subagents] Bootstrapping Anban binaries into $PLUGIN_ROOT/bin ..."
+  if ! ANBAN_PLUGIN_ROOT="$PLUGIN_ROOT" "$BOOTSTRAP"; then
+    echo "[install-subagents] WARNING: bootstrap failed; video-use will retry on first use. See $PLUGIN_ROOT/bin/.bootstrap.log" >&2
+  fi
+else
+  echo "[install-subagents] WARNING: $BOOTSTRAP not found or not executable; video-use may need anban on PATH." >&2
+fi
+
+# --- 3. Copy subagent TOMLs into ~/.codex/agents/ -------------------------
 
 mkdir -p "$CODEX_AGENTS_DIR"
 
@@ -72,7 +84,7 @@ for toml in "$AGENTS_SRC"/*.toml; do
   echo "[install-subagents] Installed: $target"
 done
 
-# --- 3. Merge registration into ~/.codex/config.toml ----------------------
+# --- 4. Merge registration into ~/.codex/config.toml ----------------------
 
 mkdir -p "$CODEX_DIR"
 
@@ -216,7 +228,7 @@ PY
   echo "[install-subagents] Merged registration into $CODEX_CONFIG"
 fi
 
-# --- 4. Reminders ---------------------------------------------------------
+# --- 5. Reminders ---------------------------------------------------------
 
 echo
 echo "[install-subagents] Done."

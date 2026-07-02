@@ -1,6 +1,18 @@
 {
   "description": "Anban 智能创作助手 plugin lifecycle hooks for Codex (mirrors claudecode/hooks/hooks.json with TaskCompleted → Stop substitution). Plugin-bundled hooks require explicit user trust review on install — if hooks do not fire, delivery summaries still run via developer_instructions embedded in each subagent TOML.",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nohup \"${PLUGIN_ROOT}/scripts/bootstrap.sh\" >/dev/null 2>&1 &",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "matcher": "wechatarticle",
