@@ -19,7 +19,7 @@ It connects to the same `anban-creator` MCP server as `claudecode/` and `opencla
 The plugin follows Codex's **Skill + Subagent + MCP** model:
 
 - **Skills** (`skills/`) — auto-discovered by Codex (24 leaf skills, identical content to `claudecode/skills/`; plus 1 reference-only directory `writers/` with no `SKILL.md`)
-- **Subagents** (`agents/`) — six TOML files installed to `~/.codex/agents/` and registered in `~/.codex/config.toml` (Codex plugins cannot bundle subagents directly — see GitHub issue #18988)
+- **Subagents** (`agents/`) — eight TOML files installed to `~/.codex/agents/` and registered in `~/.codex/config.toml` (Codex plugins cannot bundle subagents directly — see GitHub issue #18988)
 - **MCP server** (`.mcp.json`) — HTTP endpoint at `${ANBAN_API_URL:-https://api.creator.anbanai.com}/mcp`
 - **Hooks** (`hooks/hooks.json`) — lifecycle events mirroring `claudecode/hooks/hooks.json`, with `TaskCompleted` replaced by `Stop` (Codex has no `TaskCompleted` event)
 
@@ -31,13 +31,15 @@ The plugin follows Codex's **Skill + Subagent + MCP** model:
 | `seednote` | "种草笔记", "种草", "复刻", "仿写" | Research → Viral analysis (replicate) → Content → Image plan → Cover + Content images → Compliance → Archive |
 | `live-slicer` | "直播切片", "剪直播", "听悟" | ffmpeg prep → TingWu transcription → Invalid sentence filter → Segment/subject planning → Batch cuts/concat → CapCut export → Report |
 | `designer` | "上色", "填色", "线稿", "color consistency", "designer" | Init → Progressive coloring → Full audit → Best-effort correction/backtracking → Report with `needs_img2img` where strict line preservation is impossible |
-| `video` | "视频生成", "即梦", "Seedance", "剪视频", "去口癖", "字幕", "短视频封面", "人像姿态" | Intent routing → Workspace init → Branch: dreamina-video / video-use / short-video-cover / portrait-pose-variants / capcut-draft → Quality review → Archive report |
+| `videocreator` | "视频生成", "即梦", "Seedance" | dreamina-video → provider task → download/register MP4 → Quality review |
+| `videoeditor` | "剪视频", "去口癖", "字幕", "调色", "overlay animation", "剪映草稿" | video-use → transcript/EDL → render preview/final → Quality review |
+| `video` | legacy explicit video router | Compatibility entry for older manual invocations |
 
 **Codex-specific behavior**:
 - Subagents only spawn when the user **explicitly** asks ("use the wechatarticle subagent to ...", "delegate to X"). Codex does not auto-spawn subagents.
 - Each subagent declares its own `[mcp_servers.creator]` and `[[skills.config]]` — it does **not** inherit MCP servers or skills from the parent session.
 - Multi-agent mode requires `[features] multi_agent = true` in `~/.codex/config.toml` (the install script adds this automatically).
-- `[agents] max_threads = 6` bounds concurrent subagent execution.
+- `[agents] max_threads = 8` bounds concurrent subagent execution.
 
 ### Skills (`skills/`)
 

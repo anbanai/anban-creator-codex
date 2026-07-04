@@ -5,7 +5,7 @@ Professional **WeChat** and **Seednote (种草笔记)** content creation toolkit
 ## What you get
 
 - **24 auto-discovered skills** (SKILL.md format): content writing, WeChat article assembly, Seednote viral analysis, live video slicing, video-use editing, line-art coloring, short-video cover replication, portrait pose variants, SEO, e-commerce product imagery, and more.
-- **6 native Codex subagents**: end-to-end orchestrators (10,000+ word pipelines each) for the workflows above.
+- **8 native Codex subagents**: end-to-end orchestrators (10,000+ word pipelines each) for the workflows above.
 - **MCP integration**: connects to the anban-creator HTTP MCP server for project management, image generation, WeChat publishing, TingWu/Aliyun FunASR HTTP transcription, and FFmpeg-driven clip assembly.
 - **Lifecycle hooks**: `SubagentStop` (per-agent delivery summary) + `Stop` (generic QA gate).
 
@@ -29,7 +29,7 @@ codex plugin install anban
 
 ### 2. Install the subagents
 
-Codex plugins cannot bundle subagents (open limitation — see `CODEX.md`). The six subagents live in `codex/agents/*.toml` and must be copied to `~/.codex/agents/`:
+Codex plugins cannot bundle subagents (open limitation — see `CODEX.md`). The eight subagents live in `codex/agents/*.toml` and must be copied to `~/.codex/agents/`:
 
 ```bash
 bash codex/install/install-subagents.sh
@@ -37,7 +37,7 @@ bash codex/install/install-subagents.sh
 
 The script is idempotent and does three things:
 1. **Copies `agents/*.toml` to `~/.codex/agents/`**, substituting `__PLUGIN_ROOT__` with the discovered plugin install path (so each `[[skills.config]]` path resolves correctly).
-2. **Merges `install/agents-registration.toml` into `~/.codex/config.toml`** — adds `[features] multi_agent = true`, `[agents] max_threads = 6`, and one `[agents.<name>]` block per subagent. Existing tables are preserved (no overwrites).
+2. **Merges `install/agents-registration.toml` into `~/.codex/config.toml`** — adds `[features] multi_agent = true`, `[agents] max_threads = 8`, and one `[agents.<name>]` block per subagent. Existing tables are preserved (no overwrites).
 3. **Prints next-step reminders** (env var setup, restart Codex, verify).
 
 ### 3. Set API credentials
@@ -71,7 +71,7 @@ Expected: Anban Creator skills listed (article, content-writing, seednote, ecomm
 /agents
 ```
 
-Expected: 6 subagents listed (wechatarticle, seednote, designer, live-slicer, video, ecommerce) with their nicknames.
+Expected: 8 subagents listed (wechatarticle, seednote, designer, live-slicer, video, videocreator, videoeditor, ecommerce) with their nicknames.
 
 ```
 $anban-setup
@@ -125,6 +125,8 @@ using the article-visual-design skill, generate a 2.35:1 cover for the article a
 | `seednote` | Topic/viral analysis → Markdown note (title + body + hashtags) → cover + 3-8 content images + tail image → archive |
 | `designer` | Per-lineart `colored_NN.png` + Color Bible + consistency report (PASS/MINOR/FAIL per entity) + manual-review flags |
 | `live-slicer` | metadata.json + audio.mp3 + cover.jpg + TingWu analysis + filtered sentences + clip plan + exported MP4s + CapCut drafts + transcript.md + summary.md |
+| `videocreator` | input manifest + script/shot plan + video generation plan + provider task records + registered MP4 + delivery manifest + quality review |
+| `videoeditor` | input manifest + transcript JSON + EDL + media manifest + preview/final MP4 + render report + quality review |
 | `video` | Routes between `dreamina-video` generation, `video-use` footage editing, `short-video-cover`, `portrait-pose-variants`, and optional `capcut-draft` delivery |
 | `ecommerce` | Product Bible (analyze product photos) → selling points (FABE) → asset plan → anchor-first generation with provider-adaptive ref strategy + vision self-check → compliance (广告法极限词) → archive + manifest |
 
