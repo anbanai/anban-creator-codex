@@ -61,7 +61,7 @@ Connects to the `anban-creator` MCP server at `${ANBAN_API_URL:-https://api.crea
 
 - `list_projects`, `get_project_profile`, `list_drafts`, `list_published_articles`, `list_project_titles`
 - `prepare_workspace`, `archive_workspace`
-- `write_article`, `convert_markdown`, `optimize_seo`
+- `render_template`, `convert_markdown`
 - `generate_image`, `upload_image`, `download_image`, `compress_image`, `analyze_image`
 - `publish_draft` (WeChat draft box)
 - `get_feed_detail` (SeedNote source note fetching)
