@@ -1,6 +1,7 @@
 ---
 name: seednote-research
 description: Analyzes Seednote (种草笔记) topics, trending notes (热门笔记), and scores engagement potential (互动率评分). Use when analyzing Seednote topics, scoring engagement, researching trending seednote content, or fetching source note details for replicate mode. Also use when user mentions '种草笔记选题', '热门笔记', '竞品分析', '笔记分析', or when the seednote pipeline calls for topic discovery or source note fetching.
+user-invocable: false
 ---
 
 # 种草笔记选题研究
@@ -8,6 +9,18 @@ description: Analyzes Seednote (种草笔记) topics, trending notes (热门笔�
 ## 案例库
 
 遇到场景分支、产物格式或质量边界不确定时，先读 [references/examples.md](references/examples.md)。
+
+## 外部数据入口
+
+Agent-Reach 是小红书真实外部数据的首选且唯一入口。研究前必须 using the `agent-reach` skill，并执行：
+
+```bash
+agent-reach doctor --json
+```
+
+读取 `xiaohongshu.active_backend` 后，完全按 Agent-Reach 选出的 backend 执行对应官方命令组；不要在 Anban 内自行判断桌面、服务器、无头环境，也不要自行给 OpenCLI、xiaohongshu-mcp 或 xhs-cli 排优先级。Agent-Reach 不可用、未安装、未登录或 doctor 没有可用小红书 backend 时，停止并提示用户按 Agent-Reach 官方安装/配置流程修复；不要生成虚构热门数据。
+
+本 skill 只读：允许搜索、笔记详情、评论、feed、用户公开数据；禁止发布、删除、关注、取关、点赞、收藏、评论写入等写操作。
 
 ## 图片比例固定规则
 
@@ -18,18 +31,56 @@ description: Analyzes Seednote (种草笔记) topics, trending notes (热门笔�
 3. 业务默认比例只作兜底：微信文章封面/正文图默认 `16:9`；Seednote/XLS/移动信息流默认 `3:4`；电商、广告投放、视频封面按具体平台素材位要求执行。
 4. 不得从模型路由、供应商默认 `size` 或模型能力反推业务比例；模型只决定能力和成本，比例属于创作场景约束。
 
+## Anban MCP 工具
 
-## MCP 工具
+Anban MCP 只用于 Anban 产品能力，不用于小红书外部数据主路径。
 
 | MCP 工具 | 说明 |
 |----------|------|
 | `claim_topic` (project_id, task_id?) | 从项目选题池认领下一个未用选题（原创模式选题**首选来源**，池非空必用） |
 | `list_project_titles` (project_id) | 查看系统内已有标题（定标题前必调） |
-| `search_feeds` (keyword) | 搜索相关话题的热门笔记 |
-| `list_feeds` () | 获取推荐流 |
-| `get_feed_detail` (feed_id, xsec_token) | 获取具体笔记详情+评论数据 |
 
----
+兼容工具 `search_seednote_feeds`、`get_seednote_feed_detail`、`check_seednote_login_status` 只作为 legacy/server/internal fallback，不进入新 seednote 研究主路径。
+
+## Agent-Reach backend 命令族
+
+下列命令只能在 `agent-reach doctor --json` 返回对应 `active_backend` 后使用。实际可用性、安装、登录和 fallback 顺序由 Agent-Reach 决定。
+
+```bash
+# active_backend: OpenCLI
+opencli xiaohongshu search "query" -f json
+opencli xiaohongshu note "NOTE_URL_FROM_SEARCH_OR_FEED" -f json
+opencli xiaohongshu comments "NOTE_URL_FROM_SEARCH_OR_FEED" --with-replies --limit 20 -f json
+opencli xiaohongshu feed -f json
+opencli xiaohongshu user "USER_ID_OR_PROFILE_URL" -f json
+
+# active_backend: xiaohongshu-mcp
+mcporter call 'xiaohongshu.check_login_status()' --timeout 120000
+mcporter call 'xiaohongshu.get_login_qrcode()' --timeout 120000
+mcporter call 'xiaohongshu.search_feeds(keyword: "query")' --timeout 120000
+mcporter call 'xiaohongshu.get_feed_detail(feed_id: "...", xsec_token: "...")' --timeout 120000
+
+# active_backend: xhs-cli legacy
+xhs search "query"
+xhs read "NOTE_URL_FROM_SEARCH_OR_FEED"
+xhs comments "NOTE_URL_FROM_SEARCH_OR_FEED"
+xhs feed
+```
+
+## xsec_token 工作流
+
+`feed_id` 和 `xsec_token` 只能从 Agent-Reach backend 的 search/feed/note 返回结果或完整签名 URL 中提取，不能凭空构造。裸 note_id 不可靠；复刻模式必须保留 token 来源。
+
+产物中必须记录：
+
+```text
+data_source=agent-reach
+active_backend=<agent-reach doctor 的 xiaohongshu.active_backend>
+backend_command_family=<OpenCLI|xiaohongshu-mcp|xhs-cli legacy>
+token_source=<search|feed|signed_url|missing>
+missing_fields=<缺失字段列表>
+fallback_reason=<无降级则写 none>
+```
 
 ## 完整研究流程
 
@@ -39,79 +90,59 @@ description: Analyzes Seednote (种草笔记) topics, trending notes (热门笔�
 
 原创模式下，先确定本次笔记选题，**不要凭空搜**。
 
-**如何判断任务是否已指定主题**：检查本任务的 user prompt——
+**如何判断任务是否已指定主题**：检查本任务的 user prompt。
 - 含 `create content about: <X>` → `<X>` 就是任务指定主题。
-- 是 `research and create content ... choose the optimal theme` 这类让你**自己选题**的措辞 → 任务**未**指定主题。
-- ⚠️ 项目 profile 的 keywords **不是**主题。
+- 是 `research and create content ... choose the optimal theme` 这类让你自己选题的措辞 → 任务未指定主题。
+- 项目 profile 的 keywords 不是主题。
 
-1. **任务已指定主题**（user prompt 含 `about: <X>`）：**直接采用 `<X>`，禁止调用 `claim_topic`**（避免与服务端预认领重复消费），把它作为步骤 2 的搜索关键词；步骤 4 跳过「选最高分」（评分仅作参考）。
-2. **任务未指定主题**：先认领选题池：
-   ```
-   claim_topic(project_id="$PROJECT_ID", task_id="$TASK_ID")
-   ```
-   - 返回非空 `topic` → 采用，作为步骤 2 的搜索关键词，步骤 4 不再另选。
-   - 返回 `null`（池空）→ 继续下方步骤 1～4 的完整研究流程。
-
-> 选题池是用户预置、希望被优先消费的选题。只要池里有，就必须用池里的。
+1. 任务已指定主题：直接采用 `<X>`，禁止调用 `claim_topic`，把它作为 Agent-Reach 搜索关键词；评分仅作参考。
+2. 任务未指定主题：先调用 `claim_topic(project_id="$PROJECT_ID", task_id="$TASK_ID")`。返回非空 `topic` 则采用；返回 `null` 则继续自行搜索 + 评分选题。
 
 ### 步骤 1：查重
 
 调用 `list_project_titles(project_id="$PROJECT_ID")` 查看已有标题，后续标题避开。
 
-### 步骤 2：搜索热门笔记
+### 步骤 2：Agent-Reach 采集热门笔记
 
-根据账号定位和用户需求，确定搜索关键词（2-3 个），调用：
-
-```
-search_feeds(keyword="咖啡馆选址")    // 返回 feed_id + xsecToken
-list_feeds()                         // 了解平台当前推广内容
-```
-
-**xsec_token 工作流**：`feed_id` 和 `xsec_token` 只能从 `search_feeds`/`list_feeds` 的返回结果中提取，不能凭空构造。将这两个值传入 `get_feed_detail` 获取详细数据。
+根据账号定位和用户需求确定 2-3 个搜索关键词。先执行 `agent-reach doctor --json`，再按 `active_backend` 调用对应命令族，采集搜索结果、feed 结果和 Top 3-5 条笔记详情/评论。
 
 ### 步骤 3：分析热门笔记
 
-对搜索结果中的 Top 3-5 条笔记，调用 `get_feed_detail` 获取详情，提取：
+提取：
 
-- **标题模板**：句式、情绪词、字数分布
-- **封面模板**：信息层级、文字密度、配色规律
-- **正文模板**：开场钩子、段落结构、结尾 CTA 形式
-- **评论信号**：高频关键词、用户痛点、争议点
-- **标签组合**：核心话题 + 垂直话题 + 长尾话题
+- 标题模板：句式、情绪词、字数分布
+- 封面模板：信息层级、文字密度、配色规律
+- 正文模板：开场钩子、段落结构、结尾 CTA 形式
+- 评论信号：高频关键词、用户痛点、争议点
+- 标签组合：核心话题 + 垂直话题 + 长尾话题
 
 ### 步骤 4：评分与选题
 
-使用互动率评分模型：
+使用 2026 小红书 CES 互动评分模型：
 
-```
+```text
 topic_score = engagement_rate × recency_weight × novelty_bonus
-engagement_rate = (likes + favorites + 2×comments) / max(total, 1)
+engagement_rate = (like_count×1 + collect_count×1 + comment_count×4 + share_count×4) / max(total, 1)
 recency_weight: 24h→1.0, 7d→0.8, 30d→0.5, 更早→0.3
 novelty_bonus: 同角度笔记<3 → 1.2, 否则 → 1.0
 ```
 
-计算所有候选选题的 `topic_score`，自动选择得分最高者。
-
-**产出**：将评分明细与选题理由写入 `$DIR/topic-analysis.md`。
-
----
+字段缺失时按 0 计入并在 `missing_fields` 中记录；不要补造数据。评分明细、最终选题理由和数据来源字段写入 `$DIR/topic-analysis.md`。
 
 ## 复刻模式源笔记获取
 
 当用户提供笔记 ID 或链接时，本 skill 只负责获取源笔记详情，不做爆款模板分析：
 
-1. 通过 `search_feeds` 或 `list_feeds` 获取真实返回的 `feed_id` 与 `xsec_token`
-2. 调用 `get_feed_detail(feed_id, xsec_token)` 获取源笔记详情、互动数据和评论数据
-3. 将原始详情、token 来源、互动数据、评论摘要和数据缺失项写入 `$DIR/source-note.md`
-4. 后续由 `seednote-viral-analysis` skill 读取 `$DIR/source-note.md`，生成 `$DIR/source-analysis.md`、`$DIR/viral-template.json`、`$DIR/template-meta.json`
+1. 通过 Agent-Reach backend 的 search/feed/signed URL 获取真实 `feed_id` 与 `xsec_token`。
+2. 按 `active_backend` 获取笔记详情、互动数据和评论数据。
+3. 将原始详情、`data_source=agent-reach`、`active_backend`、`backend_command_family`、`token_source`、互动数据、评论摘要、`missing_fields` 和 `fallback_reason` 写入 `$DIR/source-note.md`。
+4. 后续由 `seednote-viral-analysis` skill 读取 `$DIR/source-note.md`，生成 `$DIR/source-analysis.md`、`$DIR/viral-template.json`、`$DIR/template-meta.json`。
 
 **边界**：不要在本 skill 中提取爆款模板，不要调用 `save_template`，不要生成改写正文。
-
----
 
 ## 产出要求
 
 | 模式 | 产出文件 |
 |------|----------|
-| 原创模式 | `$DIR/topic-analysis.md`（候选话题列表、评分明细、最终选题理由） |
-| 复刻模式 | `$DIR/source-note.md`（源笔记原始详情、互动数据、评论摘要、数据缺失项） |
+| 原创模式 | `$DIR/topic-analysis.md`（候选话题列表、评分明细、最终选题理由、Agent-Reach 数据来源字段） |
+| 复刻模式 | `$DIR/source-note.md`（源笔记原始详情、互动数据、评论摘要、Agent-Reach 数据来源字段、数据缺失项） |

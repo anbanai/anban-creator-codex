@@ -31,7 +31,7 @@ The plugin follows Codex's **Skill + Subagent + MCP** model:
 | `seednote` | "种草笔记", "种草", "复刻", "仿写" | Research → Viral analysis (replicate) → Content → Image plan → Cover + Content images → Compliance → Archive |
 | `live-slicer` | "直播切片", "剪直播", "听悟" | ffmpeg prep → TingWu transcription → Invalid sentence filter → Segment/subject planning → Batch cuts/concat → CapCut export → Report |
 | `designer` | "上色", "填色", "线稿", "color consistency", "designer" | Init → Progressive coloring → Full audit → Best-effort correction/backtracking → Report with `needs_img2img` where strict line preservation is impossible |
-| `videocreator` | "视频生成", "即梦", "Seedance" | dreamina-video → provider task → download/register MP4 → Quality review |
+| `videocreator` | "视频生成", "即梦", "Seedance" | seedance-20 → MCP provider task → download/register MP4 → Quality review |
 | `videoeditor` | "剪视频", "去口癖", "字幕", "调色", "overlay animation", "剪映草稿" | video-use → transcript/EDL → render preview/final → Quality review |
 | `video` | legacy explicit video router | Compatibility entry for older manual invocations |
 
@@ -51,7 +51,7 @@ Key skill groups:
 - **SeedNote**: `seednote`, `seednote-research`, `seednote-viral-analysis`, `seednote-writing`, `seednote-visual-design`
 - **Live slicing**: `live-slice`, `capcut-draft`
 - **Design**: `line-art-coloring`
-- **Video**: `dreamina-video`, `video-use`, `short-video-cover`, `portrait-pose-variants`, `capcut-draft`
+- **Video**: `seedance-20`, `dreamina-video` (compatibility alias), `video-use`, `short-video-cover`, `portrait-pose-variants`, `capcut-draft`
 - **Setup**: `anban-setup` (first-time API Key setup and connectivity verification; Codex-specific — does not auto-write `~/.codex/config.toml`, documents manual setup steps instead)
 - **Config**: `config` (project-level runtime configuration: writer, theme, image provider, positioning)
 

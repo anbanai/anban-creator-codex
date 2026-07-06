@@ -127,7 +127,7 @@ using the article-visual-design skill, generate a 2.35:1 cover for the article a
 | `live-slicer` | metadata.json + audio.mp3 + cover.jpg + TingWu analysis + filtered sentences + clip plan + exported MP4s + CapCut drafts + transcript.md + summary.md |
 | `videocreator` | input manifest + script/shot plan + video generation plan + provider task records + registered MP4 + delivery manifest + quality review |
 | `videoeditor` | input manifest + transcript JSON + EDL + media manifest + preview/final MP4 + render report + quality review |
-| `video` | Routes between `dreamina-video` generation, `video-use` footage editing, `short-video-cover`, `portrait-pose-variants`, and optional `capcut-draft` delivery |
+| `video` | Routes between `seedance-20` generation, `video-use` footage editing, `short-video-cover`, `portrait-pose-variants`, and optional `capcut-draft` delivery |
 | `ecommerce` | Product Bible (analyze product photos) → selling points (FABE) → asset plan → anchor-first generation with provider-adaptive ref strategy + vision self-check → compliance (广告法极限词) → archive + manifest |
 
 ## Troubleshooting

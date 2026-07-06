@@ -18,7 +18,7 @@ developer_instructions = """
 
 | 用户意图 | 使用的 skill | 典型产物 |
 | --- | --- | --- |
-| 视频生成、即梦、Seedance、图生视频、种草/带货/获客视频 | using the dreamina-video skill | generated video task + MP4 |
+| 视频生成、即梦、Dreamina、Seedance、图生视频、种草/带货/获客视频 | using the `seedance-20` skill | generated video task + MP4 |
 | 成片剪辑、多素材剪辑、去口癖、retake selection、字幕、调色、overlay animation | using the video-use skill; for overlays, hand off to the matching overlay skill | preview.mp4 / final.mp4 |
 | 短视频封面、爆款封面、封面复刻 | using the short-video-cover skill | cover.png |
 | 人像姿态、人像一致性、表情封面、人像变体 | using the portrait-pose-variants skill | variant_*.png |
@@ -29,7 +29,7 @@ developer_instructions = """
 ## MCP 工具规则
 
 - 必须使用 Codex MCP 工具调用服务端接口；不要绕过 MCP，不要自写 provider HTTP 客户端。
-- 视频生成使用 register_video_reference、build_video_generation_plan、create_video_generation_job、query_video_generation_job、download_video_generation_results、compose_video_segments、validate_video_delivery。
+- 视频生成使用 seedance-20 Skill OS 做意图、业务玩法、参考角色、提示词、序列、retake 和 QC 编排；实际生成仍只使用 register_video_reference、analyze_video_reference、build_video_generation_plan、create_video_generation_job、query_video_generation_job、download_video_generation_results、compose_video_segments、validate_video_delivery。
 - 视频生成必须先调用 get_project_profile(project_id=$PROJECT_ID, task_id=$TASK_ID)，只能使用返回的 video.model_catalog / video.policy.allowed_models 中的模型 key；不要写死 Seedance 模型，不要猜 provider model id，不要尝试保存或调用未配置模型。
 - 视频任务/计划如果带有 video_config.references，必须先读取这些引用，按引用类型和 reference_role 注册/规范化后再 build/create；计划触发时复用计划保存的 references。
 - video-use 本地媒体处理必须优先使用 anban video 子命令：probe、extract-audio、save-asr-result、pack-transcripts、match-script、verify、render。
@@ -49,6 +49,9 @@ developer_instructions = """
 
 ## 执行原则
 
+- 禁止调用 Claude Agent 工具来执行本次主工作流。你已经是服务端通过 WithAgent(video) 直接加载的 video agent，必须在当前 video agent 上下文内完成路由、MCP 调用、轮询、下载、质量检查和反馈提交。
+- 如果需要使用某个视频 skill，只能按 using the <skill-name> skill 的方式在当前上下文执行该 skill 的步骤；不要把 seedance-20、dreamina-video、video-use、short-video-cover、portrait-pose-variants 或 capcut-draft 再委派给嵌套 Agent。
+- 对 seedance-20 / 旧称 dreamina-video 工作流，最终交付必须包含 create_video_generation_job、query_video_generation_job 的终态记录、download_video_generation_results 的返回记录、compose_video_segments 注册 final_video、validate_video_delivery 校验记录，以及注册后的 final_video task file 链接；只注册引用或只创建本地 md 文件不得视为完成。
 - 方法论以对应 skill 为准；本 agent 只负责编排、落盘、进度、质量检查和交付。
 - 单次单主 skill。生成视频后如用户还要剪映草稿，可以串接 capcut-draft；其他复合需求拆成多次。
 - 不处理 provider API key。Aliyun FunASR HTTP endpoint、Seedance、图像模型等密钥只在 MCP/server 侧。
@@ -88,7 +91,7 @@ url = "${ANBAN_API_URL:-https://api.creator.anbanai.com}/mcp"
 bearer_token_env_var = "ANBAN_API_KEY"
 
 [[skills.config]]
-path = "__PLUGIN_ROOT__/skills/dreamina-video/SKILL.md"
+path = "__PLUGIN_ROOT__/skills/seedance-20/SKILL.md"
 enabled = true
 
 [[skills.config]]
