@@ -1,6 +1,6 @@
 # Codex subagent registration — append (or merge) into ~/.codex/config.toml
 #
-# This file is consumed by install-subagents.sh. It registers the eight anban-creator
+# This file is consumed by install-subagents.sh. It registers the nine anban-creator
 # subagents and enables the multi-agent feature flag.
 #
 # WARNING: do NOT paste this verbatim if your ~/.codex/config.toml already declares
@@ -21,6 +21,11 @@ nickname_candidates = ["Writer", "ArticleBot", "公众号写手"]
 description = "种草笔记全自动创作引擎（原创 + 复刻）"
 config_file = "~/.codex/agents/seednote.toml"
 nickname_candidates = ["NoteBot", "Seeder", "种草机器"]
+
+[agents.moments]
+description = "朋友圈素材包全自动创作 Agent（素材拆解 → 正文 → 可选社交卡片 → 归档）"
+config_file = "~/.codex/agents/moments.toml"
+nickname_candidates = ["Moments", "朋友圈写手", "PrivateDomain"]
 
 [agents.designer]
 description = "线稿批量上色与一致性审计引擎"

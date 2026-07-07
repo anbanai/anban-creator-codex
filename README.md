@@ -4,8 +4,8 @@ Professional **WeChat** and **Seednote (种草笔记)** content creation toolkit
 
 ## What you get
 
-- **24 auto-discovered skills** (SKILL.md format): content writing, WeChat article assembly, Seednote viral analysis, live video slicing, video-use editing, line-art coloring, short-video cover replication, portrait pose variants, SEO, e-commerce product imagery, and more.
-- **8 native Codex subagents**: end-to-end orchestrators (10,000+ word pipelines each) for the workflows above.
+- **36 auto-discovered skills** (SKILL.md format): content writing, WeChat article assembly, Seednote viral analysis, Agent-Reach-backed Xiaohongshu research, WeChat Moments packages, live video slicing, video-use editing, line-art coloring, short-video cover replication, portrait pose variants, SEO, e-commerce product imagery, and more.
+- **9 native Codex subagents**: end-to-end orchestrators (10,000+ word pipelines each) for the workflows above.
 - **MCP integration**: connects to the anban-creator HTTP MCP server for project management, image generation, WeChat publishing, TingWu/Aliyun FunASR HTTP transcription, and FFmpeg-driven clip assembly.
 - **Lifecycle hooks**: `SubagentStop` (per-agent delivery summary) + `Stop` (generic QA gate).
 
@@ -71,7 +71,7 @@ Expected: Anban Creator skills listed (article, content-writing, seednote, ecomm
 /agents
 ```
 
-Expected: 8 subagents listed (wechatarticle, seednote, designer, live-slicer, video, videocreator, videoeditor, ecommerce) with their nicknames.
+Expected: 9 subagents listed (wechatarticle, seednote, moments, designer, live-slicer, video, videocreator, videoeditor, ecommerce) with their nicknames.
 
 ```
 $anban-setup
@@ -170,6 +170,15 @@ See [CODEX.md](./CODEX.md#codex-vs-claude-code-differences) for the full mapping
 - No `TaskCompleted` event — `Stop` matcher `"*"` replaces it.
 - Plugin hooks require explicit trust review.
 - Skills, themes, writers, MCP tool names, and content pipelines are byte-identical to `claudecode/`.
+
+## Skill Upstream Index
+
+The canonical source/copy ledger for Anban skills lives in
+[`../claudecode/README.md`](../claudecode/README.md#skill-上游来源与批量更新索引). Use that table before bulk-updating
+Codex skills: it records which skills embed or adapt open-source skills, which ones only borrow structure, and which ones
+are Anban-original workflows. When a mirrored skill exists in `claudecode/skills`, `codex/skills`, and `openclaw/skills`,
+update all distributions together unless a test documents the intended difference. In the monorepo, also apply the
+Claude Skills maintenance checklist in `../docs/claude/` before shipping skill or agent changes.
 
 ## License
 

@@ -74,18 +74,6 @@ url = "${ANBAN_API_URL:-https://api.creator.anbanai.com}/mcp"
 bearer_token_env_var = "ANBAN_API_KEY"
 
 [[skills.config]]
-path = "__PLUGIN_ROOT__/skills/music-to-video/SKILL.md"
-enabled = true
-
-[[skills.config]]
-path = "__PLUGIN_ROOT__/skills/slideshow/SKILL.md"
-enabled = true
-
-[[skills.config]]
-path = "__PLUGIN_ROOT__/skills/remotion-best-practices/SKILL.md"
-enabled = true
-
-[[skills.config]]
 path = "__PLUGIN_ROOT__/skills/video-use/SKILL.md"
 enabled = true
 
