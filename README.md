@@ -5,7 +5,7 @@ Professional **WeChat** and **Seednote (种草笔记)** content creation toolkit
 ## What you get
 
 - **36 auto-discovered skills** (SKILL.md format): content writing, WeChat article assembly, Seednote viral analysis, Agent-Reach-backed Xiaohongshu research, WeChat Moments packages, live video slicing, video-use editing, line-art coloring, short-video cover replication, portrait pose variants, SEO, e-commerce product imagery, and more.
-- **9 native Codex subagents**: end-to-end orchestrators (10,000+ word pipelines each) for the workflows above.
+- **7 native Codex subagents**: end-to-end orchestrators (10,000+ word pipelines each) for the workflows above.
 - **MCP integration**: connects to the anban-creator HTTP MCP server for project management, image generation, WeChat publishing, TingWu/Aliyun FunASR HTTP transcription, and FFmpeg-driven clip assembly.
 - **Lifecycle hooks**: `SubagentStop` (per-agent delivery summary) + `Stop` (generic QA gate).
 
@@ -29,7 +29,7 @@ codex plugin install anban
 
 ### 2. Install the subagents
 
-Codex plugins cannot bundle subagents (open limitation — see `CODEX.md`). The nine subagents live in `codex/agents/*.toml` and must be copied to `~/.codex/agents/`:
+Codex plugins cannot bundle subagents (open limitation — see `CODEX.md`). The seven subagents live in `codex/agents/*.toml` and must be copied to `~/.codex/agents/`:
 
 ```bash
 bash codex/install/install-subagents.sh
@@ -71,7 +71,7 @@ Expected: Anban Creator skills listed (article, content-writing, seednote, ecomm
 /agents
 ```
 
-Expected: 9 subagents listed (wechatarticle, seednote, moments, designer, live-slicer, video, videocreator, videoeditor, ecommerce) with their nicknames.
+Expected: 7 subagents listed (wechatarticle, seednote, moments, designer, live-slicer, video, ecommerce) with their nicknames.
 
 ```
 $anban-setup
@@ -125,16 +125,14 @@ using the article-visual-design skill, generate a 2.35:1 cover for the article a
 | `seednote` | Topic/viral analysis → Markdown note (title + body + hashtags) → cover + 3-8 content images + tail image → archive |
 | `designer` | Per-lineart `colored_NN.png` + Color Bible + consistency report (PASS/MINOR/FAIL per entity) + manual-review flags |
 | `live-slicer` | metadata.json + audio.mp3 + cover.jpg + TingWu analysis + filtered sentences + clip plan + exported MP4s + CapCut drafts + transcript.md + summary.md |
-| `videocreator` | input manifest + script/shot plan + video generation plan + provider task records + registered MP4 + delivery manifest + quality review |
-| `videoeditor` | input manifest + transcript JSON + EDL + media manifest + preview/final MP4 + render report + quality review |
-| `video` | Routes between `seedance-20` generation, `video-use` footage editing, `short-video-cover`, `portrait-pose-variants`, and optional `capcut-draft` delivery |
+| `video` | Unified video intake → Agent chooses `seedance-20` generation, `video-use` footage editing, `short-video-cover`, `portrait-pose-variants`, or optional `capcut-draft` delivery |
 | `ecommerce` | Product Bible (analyze product photos) → selling points (FABE) → asset plan → anchor-first generation with provider-adaptive ref strategy + vision self-check → compliance (广告法极限词) → archive + manifest |
 
 ## Troubleshooting
 
 ### `/agents` shows nothing
 
-- Confirm `~/.codex/agents/*.toml` exists (9 files).
+- Confirm `~/.codex/agents/*.toml` exists (7 files).
 - Confirm `~/.codex/config.toml` contains `[agents.wechatarticle]` etc.
 - Confirm `[features] multi_agent = true` is in `config.toml`.
 - Fully restart Codex (not just reload).

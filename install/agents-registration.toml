@@ -1,6 +1,6 @@
 # Codex subagent registration — append (or merge) into ~/.codex/config.toml
 #
-# This file is consumed by install-subagents.sh. It registers the nine anban-creator
+# This file is consumed by install-subagents.sh. It registers the seven anban-creator
 # subagents and enables the multi-agent feature flag.
 #
 # WARNING: do NOT paste this verbatim if your ~/.codex/config.toml already declares
@@ -41,16 +41,6 @@ nickname_candidates = ["Slicer", "Cutter", "切片机"]
 description = "视频创作统一入口（视频生成、素材剪辑、封面、人像姿态、剪映草稿）"
 config_file = "~/.codex/agents/video.toml"
 nickname_candidates = ["Video", "Director", "视频导演"]
-
-[agents.videocreator]
-description = "AI 视频生成专用 agent（Seedance/Dreamina → 注册 MP4 交付）"
-config_file = "~/.codex/agents/videocreator.toml"
-nickname_candidates = ["VideoCreator", "视频生成"]
-
-[agents.videoeditor]
-description = "视频剪辑与后期专用 agent（素材剪辑、字幕、调色、overlay、剪映草稿）"
-config_file = "~/.codex/agents/videoeditor.toml"
-nickname_candidates = ["VideoEditor", "视频剪辑"]
 
 [agents.ecommerce]
 description = "电商出图全自动执行引擎（多产品图 → 主图/详情/封面/分享/SKU，保证产品跨图一致）"
