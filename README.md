@@ -29,7 +29,7 @@ codex plugin install anban
 
 ### 2. Install the subagents
 
-Codex plugins cannot bundle subagents (open limitation — see `CODEX.md`). The eight subagents live in `codex/agents/*.toml` and must be copied to `~/.codex/agents/`:
+Codex plugins cannot bundle subagents (open limitation — see `CODEX.md`). The nine subagents live in `codex/agents/*.toml` and must be copied to `~/.codex/agents/`:
 
 ```bash
 bash codex/install/install-subagents.sh
@@ -134,7 +134,7 @@ using the article-visual-design skill, generate a 2.35:1 cover for the article a
 
 ### `/agents` shows nothing
 
-- Confirm `~/.codex/agents/*.toml` exists (6 files).
+- Confirm `~/.codex/agents/*.toml` exists (9 files).
 - Confirm `~/.codex/config.toml` contains `[agents.wechatarticle]` etc.
 - Confirm `[features] multi_agent = true` is in `config.toml`.
 - Fully restart Codex (not just reload).
