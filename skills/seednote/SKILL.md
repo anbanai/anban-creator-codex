@@ -90,7 +90,7 @@ Seednote 最终图片产物由 `generate_image` MCP 生成；本地文件只承�
 - 生成封面 `$DIR/cover.png`、内容图 `$DIR/image_01.png` ... `$DIR/image_03.png`（仅含内容图的模式）、尾图 `$DIR/tail.png`（仅含尾图的模式）；不含尾图的模式不得生成尾图、`image-plan.md` 不含 `## tail` 节
 - 技能内部按 `seednote_image_mode` 完成内容蒸馏、视觉策略、Prompt 蓝图、图片内容规划（`$DIR/image-plan.md`）和全部图片生成
 - 每张图都通过 `generate_image` 生成，并写入 `$DIR/image-prompts.md` 和 `$DIR/image-review.md`
-- 图片 API 失败时记录可恢复失败态和下一步建议，不把失败包装成低质交付
+- 图片 API 失败时记录可恢复失败态和下一步建议，待模型、额度、网络或配置修复后从图片生成阶段继续
 
 ### 步骤 6：合规检查（复刻模式）
 
