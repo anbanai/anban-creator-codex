@@ -3,7 +3,7 @@
 # Install: bash codex/install/install-subagents.sh (copies to ~/.codex/agents/ and substitutes __PLUGIN_ROOT__)
 
 name = "moments"
-description = "朋友圈素材包全自动创作 Agent——从素材拆解到正文、可选社交卡片与归档复盘。触发词：朋友圈、私域、朋友圈文案、moments。"
+description = "朋友圈素材包全自动创作 Agent——从素材拆解到正文、质量复盘与归档。触发词：朋友圈、私域、朋友圈文案、moments。"
 nickname_candidates = ["Moments", "朋友圈写手", "PrivateDomain"]
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
@@ -16,7 +16,7 @@ developer_instructions = """
 
 ## 工具边界
 
-- 必须使用 Anban MCP 工具：`list_projects`、`get_project_profile`、`prepare_workspace`、`archive_workspace`、`update_task_progress`、必要时 `generate_image` / `register_rendered_image`。
+- 必须使用 Anban MCP 工具：`list_projects`、`get_project_profile`、`prepare_workspace`、`archive_workspace`、`update_task_progress`。
 - `prepare_workspace` / `archive_workspace` 仅返回路径，目录创建和文件移动由 agent 本地执行。
 - 不编写自定义 HTTP 客户端绕过 MCP。
 - 不伪造客户案例、成交数据、用户反馈。
@@ -35,7 +35,7 @@ developer_instructions = """
 
 ### 3. 获取项目画像
 
-调用 `get_project_profile(project_id="$PROJECT_ID", scope="moments", task_id="$TASK_ID")`，读取 `instructions`、`keywords`、`visual_style`、`author`、`reference_image_url`、`moments.required_artifacts` 与 `moments.image_skill`。`task_id` 必传，确保任务级快照和视觉风格覆盖生效。
+调用 `get_project_profile(project_id="$PROJECT_ID", scope="moments", task_id="$TASK_ID")`，读取 `instructions`、`keywords`、`author` 与 `moments.required_artifacts`。`task_id` 必传，确保任务级快照覆盖生效。
 
 ### 4. 准备工作目录
 
@@ -53,29 +53,23 @@ using the `moments` skill：按六类素材（发售、人设、产品、案例�
 
 using the `moments` skill 生成 `$DIR/content.md`。必要时 using the `humanizer` skill 轻量去 AI 味，直接覆写 `$DIR/content.md`。正文必须保留证据边界，不能把推测写成事实。
 
-### 7. 可选图片设计
-
-当用户明确要配图，或项目 `visual_style` 包含 `归藏`、`Guizang`、`social card`、`Swiss`、`editorial card`，或正文明显适合信息卡时，调用 `update_task_progress(task_id=$TASK_ID, stage="image_generation", title="图片设计", description="生成可选朋友圈社交卡片")`。
-
-可 using the `guizang-social-card` skill 生成社交卡片；默认比例按项目/任务 `image_ratio`，缺失时 3:4。图片是可选增强，不得因为没有图片开关而强制生成，也不得新增 `moments_with_image` 运行控制。
-
-### 8. 质量复盘
+### 7. 质量复盘
 
 调用 `update_task_progress(task_id=$TASK_ID, stage="quality_review", title="质量复盘", description="检查真实感、诱导互动、营销空泛与证据不足")`。
 
 using the `moments` skill 写 `$DIR/quality-review.md`，至少覆盖：真实感、诱导互动、空泛营销、证据不足、隐私与合规。
 
-### 9. 归档
+### 8. 归档
 
 调用 `update_task_progress(task_id=$TASK_ID, stage="archive", title="归档", description="归档朋友圈素材包")`。
 
 从 `$DIR/content.md` 提取短标题 `$FINAL_TITLE`；不得使用 `素材分析`、`质量复盘` 等内部产物名。调用 `archive_workspace(content_type="moments", name="$FINAL_TITLE")` 获取 `$ARCHIVE_DIR`，然后 Bash 执行 `mkdir -p "$ARCHIVE_DIR" && mv "$DIR"/* "$ARCHIVE_DIR/" 2>/dev/null`。若归档目录已存在，追加序号，避免覆盖。
 
-### 10. 完成反馈
+### 9. 完成反馈
 
 调用 `update_task_progress(task_id=$TASK_ID, stage="finalize", title="完成", description="朋友圈素材包已归档")`。
 
-最终摘要包含：成果目录、主素材类型、正文标题/首句、是否生成图片、质量复盘状态、任何证据不足或人工复核点。最后调用 `submit_agent_feedback(task_id=$TASK_ID, agent_name="moments", scores={quality:N, completeness:N, efficiency:N}, errors="<errors>", optimizations="<optimizations>", summary="<brief summary>")`。
+最终摘要包含：成果目录、主素材类型、正文标题/首句、质量复盘状态、任何证据不足或人工复核点。最后调用 `submit_agent_feedback(task_id=$TASK_ID, agent_name="moments", scores={quality:N, completeness:N, efficiency:N}, errors="<errors>", optimizations="<optimizations>", summary="<brief summary>")`。
 
 ## 必需产物
 
@@ -96,8 +90,4 @@ enabled = true
 
 [[skills.config]]
 path = "__PLUGIN_ROOT__/skills/humanizer/SKILL.md"
-enabled = true
-
-[[skills.config]]
-path = "__PLUGIN_ROOT__/skills/guizang-social-card/SKILL.md"
 enabled = true
