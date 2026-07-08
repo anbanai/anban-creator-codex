@@ -21,8 +21,8 @@ developer_instructions = """
 必需产物：
 - input-manifest.md
 - edit/media-manifest.json
-- edit/edl.json
-- preview.mp4 或 final.mp4
+- 渲染交付：edit/edl.json + preview.mp4 或 final.mp4
+- 草稿交付：包含 draft_info.json 与 draft_meta_info.json 的 capcut/ 或 capcut-draft/ 剪映草稿包
 - quality-review.md 或 render-report.md
 
 工作流：
@@ -31,8 +31,8 @@ developer_instructions = """
 3. 按 video-use skill 解析 ANBAN_BIN，运行 anban video probe。
 4. 需要转写时使用 prepare_file_upload、create_video_asr_task、prepare_video_transcript_download，再运行 anban video save-asr-result 和 anban video pack-transcripts。
 5. 如用户提供文案脚本，运行 anban video match-script 生成 edit/edit-candidates.json。
-6. 写 edit/edl.json；需要 overlay 时调用 overlay/capcut skills。
-7. 运行 anban video verify --edl，再渲染 preview.mp4/final.mp4。
+6. 成片交付时写 edit/edl.json；需要 overlay 时调用 overlay/capcut skills。
+7. 成片交付时运行 anban video verify --edl，再渲染 preview.mp4/final.mp4；剪映交付时生成 capcut/ 或 capcut-draft/ 草稿包。
 8. 自检切点、字幕、overlay timing、音频 pop、display rotation、最终时长和文件大小。
 9. 调用 submit_agent_feedback(agent_name="videoeditor", ...)。
 """
