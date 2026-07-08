@@ -4,6 +4,7 @@
 
 - [核心变化（相对旧版）](#核心变化相对旧版)
 - [参考链机制](#参考链机制)
+- [反同质化规则](#反同质化规则)
 - [image-plan.md 升级 schema](#image-planmd-升级-schema)
   - [旧 schema（已废弃）](#旧-schema已废弃)
 - [img_01 章节：{chapter title}](#img01-章节chapter-title)
@@ -26,16 +27,38 @@
 
 ## 参考链机制
 
-所有内容配图使用封面图作为风格参考锚点：
+内容配图的参考链由 `article_image_mode` 决定：
 
 ```
-封面图先生成 → $DIR/cover.png
-所有内容配图使用 ref_image_path="$DIR/cover.png"（始终用封面，不用上一张）
+cover_and_content → 封面图先生成 → 内容配图使用 ref_image_path="$DIR/cover.png"
+content_only → 不生成封面 → 内容配图不传 ref_image_path，或链到首张已生成图
 ```
 
-**为什么始终用封面**：如果每张图引用上一张，风格漂移会累积放大。封面是风格锚点，确保所有配图保持一致的视觉基准。
+**为什么优先用封面**：封面开启时，如果每张图引用上一张，风格漂移会累积放大。封面是风格锚点，确保所有配图保持一致的视觉基准。封面关闭时，严禁把 `ref_image_path` 指向不存在的 `$DIR/cover.png`。
 
 **注意**：`ref_image_path` 只传递"风格语言"。内容贴切度由 prompt 中的 `visual_brief` 和 `required_entities` 决定，并由 vision 校验把关。
+
+## 反同质化约束
+
+内容配图必须服务章节信息，而不是复刻封面主体。`ref_image_path` 只传递"风格语言"，不得复刻封面主体、封面构图或封面隐喻。
+
+- 连续 3 张内容图不得使用同一主体、同一构图或同一色块重心。
+- Prompt 必须显式写明：ref_image_path 只传递"风格语言"，不得复刻封面主体。
+- 每张图都要写出与章节原文绑定的 `visual_brief`、`required_entities` 和 `anti_generic_constraints`。
+- 若 vision 或人工复核认为画面同质化，先改章节实体和构图策略，不要只替换风格形容词。
+
+---
+
+## 反同质化规则
+
+正文配图要像同一套品牌系统，但不能像同一张图的变体。`ref_image_path` 只传递"风格语言"，不得复刻封面主体、构图或核心物件；每张正文图仍由章节自己的 `visual_brief` 和 `required_entities` 决定。
+
+规划 `image-plan.md` 时执行以下检查：
+
+- 同一批正文图不得连续 3 张使用相同主体类型（如全是茶盏/药材/山水/手部特写）。
+- 不得连续 3 张使用相同 `composition_type`、相同远近景和相同色调重心，`listicle` 模板的构图统一例外，但主体必须不同。
+- 封面主视觉只作风格锚点，不得在正文图中重复作为主要画面；如果封面是莲花，正文图不能连续用莲花或近似荷塘当章节图。
+- 中医/养生题材尤其避免"通用养生水墨背景"：每张图必须有能对应章节论点的具体物体、动作或对比关系。
 
 ---
 
@@ -197,7 +220,7 @@ must_match_excerpts:
 
 - 3 张以上配图时，必须使用 3 种以上不同构图类型
 - **例外**：`listicle` 模板要求所有 section_opener 使用同一种构图（强化"清单"感），不受此规则约束
-- 不得出现连续 3 张视觉元素、构图、色调高度相似的配图
+- 不得出现连续 3 张视觉元素、构图、色调高度相似的配图；命中时回到 image-plan.md 重分配主体、远近景或色彩重心
 
 ---
 
@@ -405,5 +428,7 @@ analyze_image(
 | Vision 持续误判实体缺失 | 图片确实有但模型说没有 | 检查实体描述是否具体（"green shoots" vs "3cm tall bright green plant"），用更可识别的描述 |
 | Prompt 过载 | 一次塞太多元素 | 砍掉非必要元素，只保留 3-5 个最关键 required_entities |
 | 风格被 ref 拉偏 | 所有图都长得像封面 | 加强 prompt 中的主体描述权重，开头说 "MAIN SUBJECT: <具体物体>" |
+| 正文图复刻封面主体 | ref_image_path 被误当成内容来源 | 明确写入"ref_image_path 只传递\"风格语言\"，不得复刻封面主体"，并把章节 required_entities 放在 prompt 开头 |
+| 连续 3 张同质化 | 主体/构图/色调重心重复 | 回到 image-plan.md 重分配主体类型、composition_type 或远近景 |
 | 构图不符合 composition_type | 指定三分法但生成居中 | 加具体方位词："subject placed at the right-third intersection, NOT centered" |
 | 重试 3 次仍失败 | 通常 prompt 本身有问题 | 回到 image-plan.md 重新审视 visual_brief 是否合理 |

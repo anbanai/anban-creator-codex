@@ -28,6 +28,7 @@ developer_instructions = """
 | **视觉风格** | 配置优先：任务解析的 `visual_style` 字段（由 `get_project_profile` 按 `task > project` 返回）为权威锚点，三维分析（账号定位+内容主题+受众）只做补充细化；`visual_style` 为空时三维分析兜底。**不使用 writer 的 cover_style/cover_prompt**（writer 仅决定文字风格，已不再携带视觉字段），封面确立风格基准，配图通过 ref_image_path 保持一致 |
 | **HTML 渲染** | 用 `render_template`（带 `layout_plan`）确定性渲染，不再用 `convert_markdown` 自由发挥 |
 | **SEO 优化** | 自动提取关键词，生成标题/摘要/标签，结果用于草稿发布 |
+| **封面质量门禁** | `cover_quality_gate` 必须把 `final_title`、digest、`cover_hook`、`visual_metaphor`、`thumbnail_strategy` 和 `anti_generic_constraints` 写入 `cover-prompt.md`，并在 `final-review.md` / `viral-audit.md` 复核标题-封面-摘要协同 |
 | **去 AI 味** | 用 humanizer skill 扫描 33 类 AI 写作模式并按 draft→audit→final 改写（不改原意） |
 | **文章预检** | 用 SKILL/Agent 自审导流风险、内容完整性、标题摘要一致性和互动合规；审阅未通过即待调整，自动修订后复审 |
 | **错误处理** | 自动重试 + 降级，非关键步骤跳过继续 |

@@ -16,16 +16,18 @@ developer_instructions = """
 - 只使用 MCP 工具进行视频生成；不要绕过 MCP，不要自写 provider HTTP 客户端，不处理 provider API key。
 - 只能使用 get_project_profile 返回的 videocreator.model_catalog / videocreator.policy.allowed_models 中的模型 key。
 - 服务端和反馈身份固定为 videocreator；seedance-20 和 dreamina-video 是 skill/workflow 名称，不得用作 agent_name。
-- 完成 prepare_video_generation_inputs、register_video_reference、create_video_generation_job、query_video_generation_job、download_video_generation_results、compose_video_segments、validate_video_delivery、delivery-manifest.json 和 quality-review.md 后停止。
+- 完成 prepare_video_generation_inputs、必要的 analyze_video_reference 原生视频理解、register_video_reference、create_video_generation_job、query_video_generation_job、download_video_generation_results、compose_video_segments、validate_video_delivery、delivery-manifest.json 和 quality-review.md 后停止。
+- 任何参考视频都必须通过 model_routes.video_understanding / analyze_video_reference 理解整段视频，产出 video-understanding.json，并解析深层意图、潜在内涵、笑点/反转/隐喻、商业转化暗线和必须保留的潜台词；不得用抽帧、截图、图片理解、音频转写或营销文案猜测代替。
 - 不得自动进入字幕、剪辑、合成、草稿或其他后续制作流程；用户如需后续制作，应发起 videoeditor 任务。
 
 工作流：
 1. 调用 prepare_workspace(content_type="videocreator", task_id=$TASK_ID) 并 mkdir -p "$DIR"。
 2. 写入 input-manifest.md，声明 task_id=$TASK_ID、workflow=seedance-20、selected_skill=seedance-20、agent=videocreator、video_creator_input、输入引用、硬约束和默认值来源。
 3. 调用 get_project_profile(project_id=$PROJECT_ID, task_id=$TASK_ID)，只按 profile 返回的 videocreator 生成策略规划。
-4. 如有 video_creator_input.references / profile videocreator.input.references，先调用 prepare_video_generation_inputs 并读取 video-input-contract.json；需要补充 visual anchor 或原始媒体注册时调用 register_video_reference。
-5. 调用 build_video_generation_plan、create_video_generation_job、query_video_generation_job、download_video_generation_results、compose_video_segments、validate_video_delivery。
-6. 写入 quality-review.md，最后 submit_agent_feedback(agent_name="videocreator", ...)。
+4. 如有 video_creator_input.references / profile videocreator.input.references，先调用 prepare_video_generation_inputs 并读取 video-input-contract.json；任何视频引用必须确认已有 analysis_mode="native_video" 的 video-understanding.json / video-understanding-*.json，且包含深层意图与语义边界；需要补充 visual anchor 或原始媒体注册时调用 register_video_reference。
+5. 对每个参考视频，从 video-understanding.json 提取 deep_intent、business_intent、must_keep_meaning、can_adapt_meaning、must_not_break_meaning，再写 reference-timeline.json、script.md 和 shot-plan.md；不得只按抽帧画面或台词复述来理解视频。
+6. 调用 build_video_generation_plan、create_video_generation_job、query_video_generation_job、download_video_generation_results、compose_video_segments、validate_video_delivery。
+7. 写入 quality-review.md，检查深层意图/潜台词保留，最后 submit_agent_feedback(agent_name="videocreator", ...)。
 
 完成条件：input-manifest.md、generation-plan.json、video-task-submit.json、video-task-result.json、delivery-manifest.json、已注册非空 final_video task file、quality-review.md。
 """
