@@ -8,9 +8,12 @@ This file provides guidance to OpenAI Codex (codex CLI / IDE) when working with 
 
 - **WeChat Official Account articles** (微信公众号图文)
 - **SeedNote posts** (种草笔记)
+- **Moments posts** (朋友圈)
 - **Live video slicing** (直播切片)
 - **Line art coloring** (线稿上色)
-- **Video creation** (视频生成 + 成片剪辑 + 短视频封面复刻 + 人像姿态变体)
+- **AI video generation** (视频生成、即梦、Seedance、图生视频、参考图/参考视频生成)
+- **Video editing and post-production** (素材剪辑、字幕、去口癖、调色、剪映草稿、成片交付)
+- **E-commerce product imagery** (电商出图：主图/详情/封面/分享/SKU，多产品图输入保一致)
 
 It connects to the same `anban-creator` MCP server as `claudecode/` and `openclaw/`. Content themes, writers, layouts, and the MCP protocol are identical across all three plugins.
 
@@ -18,8 +21,8 @@ It connects to the same `anban-creator` MCP server as `claudecode/` and `opencla
 
 The plugin follows Codex's **Skill + Subagent + MCP** model:
 
-- **Skills** (`skills/`) — auto-discovered by Codex (24 leaf skills, identical content to `claudecode/skills/`; plus 1 reference-only directory `writers/` with no `SKILL.md`)
-- **Subagents** (`agents/`) — seven TOML files installed to `~/.codex/agents/` and registered in `~/.codex/config.toml` (Codex plugins cannot bundle subagents directly — see GitHub issue #18988)
+- **Skills** (`skills/`) — auto-discovered by Codex; content is mirrored from `claudecode/skills/` where the Codex distribution supports the same workflow, plus a reference-only `writers/` directory with no `SKILL.md`
+- **Subagents** (`agents/`) — eight TOML files installed to `~/.codex/agents/` and registered in `~/.codex/config.toml` (Codex plugins cannot bundle subagents directly — see GitHub issue #18988)
 - **MCP server** (`.mcp.json`) — HTTP endpoint at `${ANBAN_API_URL:-https://api.creator.anbanai.com}/mcp`
 - **Hooks** (`hooks/hooks.json`) — lifecycle events mirroring `claudecode/hooks/hooks.json`, with `TaskCompleted` replaced by `Stop` (Codex has no `TaskCompleted` event)
 
@@ -31,7 +34,9 @@ The plugin follows Codex's **Skill + Subagent + MCP** model:
 | `seednote` | "种草笔记", "种草", "复刻", "仿写" | Research → Viral analysis (replicate) → Content → Image plan → Cover + Content images → Compliance → Archive |
 | `live-slicer` | "直播切片", "剪直播", "听悟" | ffmpeg prep → TingWu transcription → Invalid sentence filter → Segment/subject planning → Batch cuts/concat → CapCut export → Report |
 | `designer` | "上色", "填色", "线稿", "color consistency", "designer" | Init → Progressive coloring → Full audit → Best-effort correction/backtracking → Report with `needs_img2img` where strict line preservation is impossible |
-| `video` | "视频生成", "即梦", "Seedance", "剪视频", "字幕", "剪映草稿" | Unified intake → Agent chooses seedance-20, video-use, cover, pose, or CapCut workflow |
+| `videocreator` | "视频生成", "即梦", "Seedance", "图生视频", "参考图/参考视频生成" | seedance-20 generation planning → MCP video generation → Download/register final video → Quality review |
+| `videoeditor` | "剪视频", "字幕", "剪映草稿", "去口癖", "调色", "成片交付" | video-use media audit → Transcript/EDL → Preview/final render or CapCut draft → Quality review |
+| `ecommerce` | "电商出图", "商品图", "主图", "详情页", "商详", "SKU图" | Product Bible → Selling points → Asset plan → Provider-adaptive generation → Vision self-check → Archive |
 
 **Codex-specific behavior**:
 - Subagents only spawn when the user **explicitly** asks ("use the wechatarticle subagent to ...", "delegate to X"). Codex does not auto-spawn subagents.

@@ -20,6 +20,18 @@ description: 'Use when 种草笔记图文全自动创作。用户提到"种草�
 
 图片构成以结构化运行控制 `seednote_image_mode` 为准。缺失时按 `cover_content`。四种模式：`cover_only`（仅封面）、`cover_content`（封面 + 1~3 张内容图）、`cover_tail`（封面 + 尾图）、`full`（封面 + 1~3 张内容图 + 尾图）。未包含尾图的模式不得生成 `tail.png`，`image-plan.md` 不得含 `## tail` 节；未包含内容图的模式不得生成 `image_0N.png`。
 
+## Seednote 视觉方法论
+
+Seednote 最终图片产物由 `generate_image` MCP 生成；本地文件只承载规划、Prompt 蓝图、生成记录和质量复盘。图片链路按以下方法执行：
+
+1. **内容蒸馏**：从 `$DIR/content.md` 提取主题、卖点、情绪、证据、关键短句和每页承载的信息密度。
+2. **视觉策略**：先确定统一色彩、画面主体、标题层级、信息密度和内容页节奏，再写入 `$DIR/image-plan.md`。社交图文视觉原则用于提升模型出图方向：`editorial 信息层级` 让主标题、辅助信息、证据点和视觉主体各司其职；`Swiss/magazine 秩序感` 用留白、对齐、分组和对比服务移动端可读性；`图文节奏` 要求封面负责点击，内容图负责理解，尾图负责收束。
+3. **Prompt 蓝图**：每张图都有角色、可见文案、视觉主体、构图层级、风格延续和验收标准；Prompt 只描述要得到的画面效果和内容关系。
+4. **生成记录**：每次调用 `generate_image` 后，把实际 prompt、`provider`、`model`、`output_path`、返回字段和修订信息写入 `$DIR/image-prompts.md`。
+5. **质量复盘**：逐图写 `$DIR/image-review.md`，检查主题相关度、文字准确性、移动端可读性、风格一致性和是否符合 `seednote_image_mode`。
+
+如果图片 API 返回 `error` 或超时，记录 `provider`、`model`、`output_path`、`error` 和`下一步建议` 到 `$DIR/image-review.md`，并把图片阶段作为可恢复失败态报告；修复模型、额度、网络或配置后，从图片生成阶段继续。
+
 ## 强制执行声明
 
 **你正在执行种草笔记内容创作任务。你必须使用工具（MCP 工具、Write、Bash、TaskCreate 等）完成完整的创作流水线。**
@@ -76,7 +88,9 @@ description: 'Use when 种草笔记图文全自动创作。用户提到"种草�
 使用 `seednote-visual-design` skill：
 - 传入 `$DIR/content.md`
 - 生成封面 `$DIR/cover.png`、内容图 `$DIR/image_01.png` ... `$DIR/image_03.png`（仅含内容图的模式）、尾图 `$DIR/tail.png`（仅含尾图的模式）；不含尾图的模式不得生成尾图、`image-plan.md` 不含 `## tail` 节
-- 图片规划写入 `$DIR/image-plan.md`
+- 技能内部按 `seednote_image_mode` 完成内容蒸馏、视觉策略、Prompt 蓝图、图片内容规划（`$DIR/image-plan.md`）和全部图片生成
+- 每张图都通过 `generate_image` 生成，并写入 `$DIR/image-prompts.md` 和 `$DIR/image-review.md`
+- 图片 API 失败时记录可恢复失败态和下一步建议，不把失败包装成低质交付
 
 ### 步骤 6：合规检查（复刻模式）
 
@@ -105,6 +119,7 @@ description: 'Use when 种草笔记图文全自动创作。用户提到"种草�
 
 - 图片总数符合 image-plan.md「计划图片数量」声明值（封面 1 + 内容图 1~3 + 尾图 0~1）
 - 所有图片视觉风格一致
+- 所有图片均由 `generate_image` 生成，并保留 `image-prompts.md` 与 `image-review.md`
 - `content.md` 包含标题、正文、话题标签三部分
 - 标题 ≤ 20 字，关键词前置
 
