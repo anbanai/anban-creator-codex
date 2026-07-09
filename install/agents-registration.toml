@@ -52,7 +52,7 @@ description = "电商出图全自动执行引擎（多产品图 → 主图/详�
 config_file = "~/.codex/agents/ecommerce.toml"
 nickname_candidates = ["ShopBot", "Merchant", "电商出图师"]
 
-[agents.openmontage]
-description = "OpenMontage 视频生产引擎（业务 brief + 素材 → OpenMontage pipeline → 成片交付）"
-config_file = "~/.codex/agents/openmontage.toml"
-nickname_candidates = ["OpenMontage", "Montage", "视频生产"]
+[agents.montage]
+description = "Montage 视频生产引擎（业务 brief + 素材 → Montage pipeline → 成片交付）"
+config_file = "~/.codex/agents/montage.toml"
+nickname_candidates = ["Montage", "Montage", "视频生产"]
