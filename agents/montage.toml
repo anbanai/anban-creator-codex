@@ -29,7 +29,7 @@ developer_instructions = """
 2. 调用 prepare_workspace(content_type=\"montage\", task_id=$TASK_ID)。
 3. 调用 get_project_profile(project_id=$PROJECT_ID, task_id=$TASK_ID)。
 4. 写 montage-project.json。
-5. 在配置的 Montage submodule/runner 环境中运行上游 pipeline。
+5. 优先使用 $ANBAN_MONTAGE_SUBMODULE_PATH 指向的 Montage submodule 运行上游 pipeline；未设置时再回退到配置的 submodule/runner 环境。
 6. 写 delivery-manifest.json，登记 final_video 和 manifest task files。
 7. 调用 submit_agent_feedback(agent_name=\"montage\", status=\"completed\", summary=\"Montage delivery registered\")。
 """
