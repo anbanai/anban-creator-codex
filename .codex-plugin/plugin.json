@@ -1,7 +1,7 @@
 {
   "name": "anban",
-  "version": "2.10.45",
-  "description": "Anban Creator plugin for OpenAI Codex — WeChat, Seednote, videocreator, videoeditor, ecommerce, and agent-assisted publishing workflows",
+  "version": "2.10.46",
+  "description": "Anban Creator plugin for OpenAI Codex — WeChat, Seednote, OpenMontage, videocreator, videoeditor, ecommerce, and agent-assisted publishing workflows",
   "author": {
     "name": "anbanai",
     "url": "https://github.com/anbanai"
@@ -29,7 +29,8 @@
     "coloring",
     "color-consistency",
     "design",
-    "designer"
+    "designer",
+    "OpenMontage"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
