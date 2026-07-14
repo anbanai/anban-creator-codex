@@ -30,7 +30,7 @@ Seednote 最终图片产物由 `generate_image` MCP 生成；本地文件只承�
 4. **生成记录**：每次调用 `generate_image` 后，把实际 prompt、`provider`、`model`、`output_path`、返回字段和修订信息写入 `$DIR/image-prompts.md`。
 5. **质量复盘**：逐图写 `$DIR/image-review.md`，检查主题相关度、文字准确性、移动端可读性、风格一致性和是否符合 `seednote_image_mode`。
 
-如果图片 API 返回 `error` 或超时，记录 `provider`、`model`、`output_path`、`error` 和`下一步建议` 到 `$DIR/image-review.md`，并把图片阶段作为可恢复失败态报告；修复模型、额度、网络或配置后，从图片生成阶段继续。
+如果图片 API、视觉核验依赖或重试预算失败，写 `$DIR/image-review.md` 与结构化 `$DIR/failure-state.json` 后停止。每张图必须通过 `generate_image(..., verify_with_vision=true, verification_prompt=<动态核验提示词>)` 原子核验；禁止用 prompt 质量、文件尺寸或 MIME 代替视觉核验。
 
 ## 强制执行声明
 
@@ -50,7 +50,7 @@ Seednote 最终图片产物由 `generate_image` MCP 生成；本地文件只承�
 3. 写出 `reference-analysis.json` 与 `reference-analysis.md`，记录可见事实、不确定性、需求支持点、可参考维度、必须保持、必须避免、不可推出结论，并完成同产品/系列/型号、新旧包装、角度、事实图/氛围图、Logo/文字/颜色/结构冲突分析。
 4. 写出 `image-plan.md`。对每张输出图独立决定使用 0、1 或多张附件，记录附件编号、每张用途、保持项、禁止项。不得把所有素材传给所有页面；超过服务端返回的数量上限时按当页相关性排序选择子集。
 5. 写出 `image-prompts.md`。调用 `generate_image` 时只传当前输出图相关的原始路径，数组顺序必须与 prompt 中“参考图 1、参考图 2”一致。不得传分析后的截图、拼图或转码替代原图。
-6. 每张生成图片都使用动态编写的 `analyze_image` prompt 核验产品身份、结构、颜色、Logo、包装、文字、虚构部件、版本融合、禁止内容、页面职责和文字可读性，并写入 `image-review.md`。
+6. 每张生成图片都在 `generate_image` 中传 `verify_with_vision=true` 和动态 `verification_prompt`，以服务端 `verification.passed` 作为唯一通过依据并写入 `image-review.md`；`analyze_image` 只用于理解输入参考图。
 7. 核验不通过时自动调整参考组合/顺序、生成 prompt、保持项/禁止项、构图复杂度或核验 prompt。每张输出图最多 3 次生成尝试，初次生成计入。不得请求用户决定。
 8. 写出 `reference-usage-summary.json`。关键事实无法保证时任务失败；非关键氛围或轻微构图问题可保留并记录 warning。
 <!-- seednote-reference-contract:end -->
@@ -92,7 +92,7 @@ reference-usage-summary.json
       "file_name": "cover.png",
       "references": [{ "attachment_index": 1, "purpose": "保持产品身份、包装和 Logo" }],
       "generation_attempts": 2,
-      "verification": { "status": "passed", "summary": "产品身份、包装和当页文字核验通过" },
+      "verification": { "passed": true, "score": "high", "missing_entities": [], "notes": "产品身份、包装和当页文字核验通过" },
       "provider": "openai",
       "model": "gpt-image-2",
       "selection_reason": "reference_compatible_fallback"
@@ -106,6 +106,10 @@ reference-usage-summary.json
 执行预算固定为：每张输入图最多 3 次理解尝试；每张输出图最多 3 次生成尝试，首次生成计入。不得向用户发起中途确认，也不得把参考素材选择、模型回退或重试决策转交给用户。
 
 关键失败包括：唯一产品身份、Logo、包装、型号或核心结构证据不可用；身份或结构幻觉；冲突版本融合；出现禁止内容；页面无法履行职责。遇到关键失败时停止在当前阶段，但必须保留已生成文件和 trace artifacts，记录失败阶段和下一步建议，后续从失败阶段恢复。非关键氛围或轻微构图问题只记录 warning，不得把它升级成需要用户中途决策的阻塞。
+
+停止时写入 `failure-state.json`：`{"version":"1.0","status":"recoverable_failure","stage":"<stage>","error_code":"<stable_code>","message":"<原始错误摘要>","resume_from":"<stage>"}`。该文件表示任务未成功，供 Stop hook 与服务端完成校验使用。
+
+恢复运行时必须保留旧的 `failure-state.json`，直到 `resume_from` 指向的阶段已成功重做、全部完成条件已满足且即将归档；此时删除旧失败态再调用 `archive_workspace`。不得在恢复开始时提前删除，也不得让已解决的失败态进入成功归档。
 
 ---
 
@@ -156,8 +160,8 @@ reference-usage-summary.json
 - 传入 `$DIR/content.md`
 - 生成封面 `$DIR/cover.png`、内容图 `$DIR/image_01.png` ... `$DIR/image_03.png`（仅含内容图的模式）、尾图 `$DIR/tail.png`（仅含尾图的模式）；不含尾图的模式不得生成尾图、`image-plan.md` 不含 `## tail` 节
 - 技能内部按 `seednote_image_mode` 完成内容蒸馏、视觉策略、Prompt 蓝图、图片内容规划（`$DIR/image-plan.md`）和全部图片生成
-- 每张图都通过 `generate_image` 生成，并写入 `$DIR/image-prompts.md` 和 `$DIR/image-review.md`
-- 图片 API 失败时记录可恢复失败态和下一步建议，待模型、额度、网络或配置修复后从图片生成阶段继续
+- 每张图都通过带 `verify_with_vision=true` 和动态 `verification_prompt` 的 `generate_image` 原子生成、登记与核验，并写入 `$DIR/image-prompts.md` 和 `$DIR/image-review.md`
+- 图片 API 或核验依赖失败时写 `failure-state.json` 并停止，待模型、额度、网络或配置修复后从图片生成阶段继续
 
 ### 步骤 6：合规检查（复刻模式）
 
