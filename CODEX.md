@@ -63,7 +63,7 @@ Key skill groups:
 Connects to the `anban-creator` MCP server at `${ANBAN_API_URL:-https://api.creator.anbanai.com}/mcp` with Bearer token auth via `${ANBAN_API_KEY}`. Key MCP tools:
 
 - `list_projects`, `get_project_profile`, `list_drafts`, `list_published_articles`, `list_project_titles`
-- `prepare_workspace`, `archive_workspace`
+- `prepare_workspace`
 - `render_template`, `convert_markdown`
 - `generate_image`, `upload_image`, `download_image`, `compress_image`, `analyze_image`
 - `publish_draft` (WeChat draft box)
@@ -89,7 +89,7 @@ Lifecycle hooks for quality verification. **Plugin-bundled hooks are not trusted
 ## Key Conventions
 
 - **Zero user interaction**: All subagents run autonomously. Decisions are recorded in `$DIR/*.md` files, never by asking the user.
-- **Workspace isolation**: Each creation task calls `prepare_workspace` MCP tool to obtain the canonical workspace path, then creates the directory locally with `mkdir -p`. The MCP tool only computes and returns the path — it does not create directories or move files.
+- **Workspace isolation**: Each creation task calls `prepare_workspace` MCP tool to obtain the canonical workspace path, then creates the directory locally with `mkdir -p`. Every artifact remains there; server `task_files`, `execution_id`, and OSS storage own their persistence and version boundaries.
 - **File naming**: Subagents use numbered prefixes (`01-research.md`, `02-outline.md`...) or semantic names (`cover.png`, `content.md`, `image-plan.md`).
 - **Image reference chain**: First image establishes visual style; subsequent images use the first as reference to maintain consistency. For line-art coloring, current `generate_image` is best-effort reference-image generation, not a guaranteed line-preserving colorize tool.
 - **Skill references**: Subagents invoke skills via `using the <skill-name> skill` phrasing, not the Skill tool.
