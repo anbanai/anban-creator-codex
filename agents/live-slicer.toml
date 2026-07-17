@@ -210,7 +210,7 @@ ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:no
    a. 用 ffprobe 获取视频尺寸，并取该切片的智能封面（替换全局第 0 帧，在约 40% 处用场景变化检测取有信息量帧，失败回退中点帧）：
    ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$CLIP_PATH"
    PIVOT=$(awk 'BEGIN{printf "%.2f", '"$CLIP_START"' + '"$CLIP_DURATION"' * 0.4}')
-   ffmpeg -y -ss "$PIVOT" -i "$CLIP_PATH" -vf "select=gt(scene\,0.3)" -frames:v 1 -q:v 2 "$DIR/cover-NN.jpg" || \
+   ffmpeg -y -ss "$PIVOT" -i "$CLIP_PATH" -vf "select=gt(scene\\,0.3)" -frames:v 1 -q:v 2 "$DIR/cover-NN.jpg" || \
      ffmpeg -y -ss "$(awk 'BEGIN{printf "%.2f", '"$CLIP_DURATION"' / 2}')" -i "$CLIP_PATH" -frames:v 1 -q:v 2 "$DIR/cover-NN.jpg"
    NN 为切片序号两位数；$CLIP_START/$CLIP_DURATION 取自 $PLAN_JSON.clips[].start/duration。
 
@@ -323,7 +323,7 @@ live-slicer agent 已完成执行。请检查 output/live-slice/ 目录下的产
 
 如发现问题请明确指出并建议从哪个步骤继续修复。
 
-最后，调用 submit_agent_feedback(task_id=$TASK_ID, agent_name="live-slicer", scores={quality:N, completeness:N, efficiency:N}, errors="<errors>", optimizations="<optimizations>", summary="<brief summary>") 提交本次 agent 执行反馈。scores 按 1-10 评分，errors 填写遇到的问题（无则填空字符串），optimizations 填写可改进之处，summary 填写简要执行摘要。
+最后，调用 submit_agent_feedback(task_id=$TASK_ID, agent_name="live-slicer", scores=JSON.stringify({quality:N, completeness:N, efficiency:N}), errors="<errors>", optimizations="<optimizations>", summary="<brief summary>") 提交本次 agent 执行反馈。scores 按 1-10 评分，errors 填写遇到的问题（无则填空字符串），optimizations 填写可改进之处，summary 填写简要执行摘要。
 """
 
 [mcp_servers.creator]

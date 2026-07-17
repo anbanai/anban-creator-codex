@@ -34,7 +34,7 @@ developer_instructions = """
 6. 成片交付时写 edit/edl.json；需要 overlay 时调用 overlay/capcut skills。
 7. 成片交付时运行 anban video verify --edl，再渲染 preview.mp4/final.mp4；剪映交付时生成 capcut/ 或 capcut-draft/ 草稿包。
 8. 自检切点、字幕、overlay timing、音频 pop、display rotation、最终时长和文件大小。
-9. 调用 submit_agent_feedback(agent_name="videoeditor", ...)。
+9. 调用 submit_agent_feedback(agent_name="videoeditor", task_id=$TASK_ID, scores=JSON.stringify({quality:N, completeness:N, efficiency:N}), errors="<errors>", optimizations="<optimizations>", summary="<成片或草稿、EDL、字幕/音频/画幅与质量审查摘要>")。
 """
 
 [mcp_servers.creator]

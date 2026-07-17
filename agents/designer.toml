@@ -243,7 +243,7 @@ designer agent 已完成执行。请检查工作目录下的产出文件，生�
 
 如发现问题请明确指出并建议修复方案。
 
-最后，调用 submit_agent_feedback(task_id=$TASK_ID, agent_name="designer", scores={quality:N, completeness:N, efficiency:N}, errors="<errors>", optimizations="<optimizations>", summary="<brief summary>") 提交本次 agent 执行反馈。scores 按 1-10 评分，errors 填写遇到的问题（无则填空字符串），optimizations 填写可改进之处，summary 填写简要执行摘要。
+最后，调用 submit_agent_feedback(task_id=$TASK_ID, agent_name="designer", scores=JSON.stringify({quality:N, completeness:N, efficiency:N}), errors="<errors>", optimizations="<optimizations>", summary="<brief summary>") 提交本次 agent 执行反馈。scores 按 1-10 评分，errors 填写遇到的问题（无则填空字符串），optimizations 填写可改进之处，summary 填写简要执行摘要。
 """
 
 [mcp_servers.creator]

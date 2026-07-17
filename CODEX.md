@@ -31,12 +31,12 @@ The plugin follows Codex's **Skill + Subagent + MCP** model:
 | Subagent | Triggers | Pipeline |
 |----------|----------|----------|
 | `wechatarticle` | "写文章", "发文章", "公众号文章" | Research → Write → De-AI → SEO → Cover → Illustrations → HTML → Draft |
-| `seednote` | "种草笔记", "种草", "复刻", "仿写" | Research → Viral analysis (replicate) → Content → Image plan → Cover + Content images → Compliance → Archive |
+| `seednote` | "种草笔记", "种草", "复刻", "仿写" | Research → Viral analysis (replicate) → Content → image-plan/runtime mode output → Compliance → Delivery validation → `$DIR` delivery |
 | `live-slicer` | "直播切片", "剪直播", "听悟" | ffmpeg prep → TingWu transcription → Invalid sentence filter → Segment/subject planning → Batch cuts/concat → CapCut export → Report |
 | `designer` | "上色", "填色", "线稿", "color consistency", "designer" | Init → Progressive coloring → Full audit → Best-effort correction/backtracking → Report with `needs_img2img` where strict line preservation is impossible |
 | `videocreator` | "视频生成", "即梦", "Seedance", "图生视频", "参考图/参考视频生成" | seedance-20 generation planning → MCP video generation → Download/register final video → Quality review |
 | `videoeditor` | "剪视频", "字幕", "剪映草稿", "去口癖", "调色", "成片交付" | video-use media audit → Transcript/EDL → Preview/final render or CapCut draft → Quality review |
-| `ecommerce` | "电商出图", "商品图", "主图", "详情页", "商详", "SKU图" | Product Bible → Selling points → Asset plan → Provider-adaptive generation → Vision self-check → Archive |
+| `ecommerce` | "电商出图", "商品图", "主图", "详情页", "商详", "SKU图" | Product Bible → Selling points → Asset plan → Provider-adaptive generation → Vision self-check → Delivery validation → `$DIR` delivery |
 
 **Codex-specific behavior**:
 - Subagents only spawn when the user **explicitly** asks ("use the wechatarticle subagent to ...", "delegate to X"). Codex does not auto-spawn subagents.

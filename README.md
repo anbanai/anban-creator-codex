@@ -122,12 +122,12 @@ using the article-visual-design skill, generate a 2.35:1 cover for the article a
 | Subagent | What it produces |
 |----------|-----------------|
 | `wechatarticle` | Researched outline → final Markdown → WeChat-safe HTML → uploaded cover + content images → published draft |
-| `seednote` | Topic/viral analysis → Markdown note (title + body + hashtags) → cover + 3-8 content images + tail image → archive |
+| `seednote` | Topic/viral analysis → Markdown note (title + body + hashtags) → image-plan/runtime mode output → delivery validation → `$DIR` delivery |
 | `designer` | Per-lineart `colored_NN.png` + Color Bible + consistency report (PASS/MINOR/FAIL per entity) + manual-review flags |
 | `live-slicer` | metadata.json + audio.mp3 + cover.jpg + TingWu analysis + filtered sentences + clip plan + exported MP4s + CapCut drafts + transcript.md + summary.md |
 | `videocreator` | seedance-20 generation plan → MCP video generation → downloaded/registered final video → delivery manifest + quality review |
 | `videoeditor` | video-use media audit → transcript/EDL → preview/final render or CapCut draft → render report + quality review |
-| `ecommerce` | Product Bible (analyze product photos) → selling points (FABE) → asset plan → anchor-first generation with provider-adaptive ref strategy + vision self-check → compliance (广告法极限词) → archive + manifest |
+| `ecommerce` | Product Bible (analyze product photos) → selling points (FABE) → asset plan → anchor-first generation with provider-adaptive ref strategy + vision self-check → compliance (广告法极限词) → delivery validation → `$DIR` manifest delivery |
 
 ## Troubleshooting
 

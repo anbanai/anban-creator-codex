@@ -27,7 +27,7 @@ developer_instructions = """
 4. 如有 video_creator_input.references / profile videocreator.input.references，先调用 prepare_video_generation_inputs 并读取 video-input-contract.json；任何视频引用必须确认已有 analysis_mode="native_video" 的 video-understanding.json / video-understanding-*.json，且包含深层意图与语义边界；需要补充 visual anchor 或原始媒体注册时调用 register_video_reference。
 5. 对每个参考视频，从 video-understanding.json 提取 deep_intent、business_intent、must_keep_meaning、can_adapt_meaning、must_not_break_meaning，再写 reference-timeline.json、script.md 和 shot-plan.md；不得只按抽帧画面或台词复述来理解视频。
 6. 调用 build_video_generation_plan、create_video_generation_job、query_video_generation_job、download_video_generation_results、compose_video_segments、validate_video_delivery。
-7. 写入 quality-review.md，检查深层意图/潜台词保留，最后 submit_agent_feedback(agent_name="videocreator", ...)。
+7. 写入 quality-review.md，检查深层意图/潜台词保留，最后调用 submit_agent_feedback(agent_name="videocreator", task_id=$TASK_ID, scores=JSON.stringify({quality:N, completeness:N, efficiency:N}), errors="<errors>", optimizations="<optimizations>", summary="<final_video、delivery-manifest.json 与 quality-review.md 交付摘要>")。
 
 完成条件：input-manifest.md、generation-plan.json、video-task-submit.json、video-task-result.json、delivery-manifest.json、已注册非空 final_video task file、quality-review.md。
 """
