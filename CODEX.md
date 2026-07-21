@@ -54,7 +54,7 @@ Key skill groups:
 - **SeedNote**: `seednote`, `seednote-research`, `seednote-viral-analysis`, `seednote-writing`, `seednote-visual-design`
 - **Live slicing**: `live-slice`, `capcut-draft`
 - **Design**: `line-art-coloring`
-- **Video**: `seedance-20`, `dreamina-video` (compatibility alias), `video-use`, `short-video-cover`, `portrait-pose-variants`, `capcut-draft`
+- **Video**: `seedance-20`, `video-use`, `short-video-cover`, `portrait-pose-variants`, `capcut-draft`
 - **Setup**: `anban-setup` (first-time API Key setup and connectivity verification; Codex-specific — does not auto-write `~/.codex/config.toml`, documents manual setup steps instead)
 - **Config**: `config` (project-level runtime configuration: writer, theme, image provider, positioning)
 
