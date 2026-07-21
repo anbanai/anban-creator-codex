@@ -371,10 +371,6 @@ path = "__PLUGIN_ROOT__/skills/agent-reach/SKILL.md"
 enabled = true
 
 [[skills.config]]
-path = "__PLUGIN_ROOT__/skills/seednote/SKILL.md"
-enabled = true
-
-[[skills.config]]
 path = "__PLUGIN_ROOT__/skills/seednote-research/SKILL.md"
 enabled = true
 

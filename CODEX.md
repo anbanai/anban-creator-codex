@@ -15,7 +15,7 @@ This file provides guidance to OpenAI Codex (codex CLI / IDE) when working with 
 - **Video editing and post-production** (素材剪辑、字幕、去口癖、调色、剪映草稿、成片交付)
 - **E-commerce product imagery** (电商出图：主图/详情/封面/分享/SKU，多产品图输入保一致)
 
-It connects to the same `anban-creator` MCP server as `claudecode/` and `openclaw/`. Content themes, writers, layouts, and the MCP protocol are identical across all three plugins.
+It connects to the same `anban-creator` MCP server as `claudecode/`. Content themes, writers, layouts, and the MCP protocol are shared across the two supported plugins.
 
 ## Architecture
 

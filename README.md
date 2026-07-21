@@ -175,8 +175,8 @@ See [CODEX.md](./CODEX.md#codex-vs-claude-code-differences) for the full mapping
 The canonical source/copy ledger for Anban skills lives in
 [`../claudecode/README.md`](../claudecode/README.md#skill-上游来源与批量更新索引). Use that table before bulk-updating
 Codex skills: it records which skills embed or adapt open-source skills, which ones only borrow structure, and which ones
-are Anban-original workflows. When a mirrored skill exists in `claudecode/skills`, `codex/skills`, and `openclaw/skills`,
-update all distributions together unless a test documents the intended difference. In the monorepo, also apply the
+are Anban-original workflows. When a mirrored skill exists in `claudecode/skills` and `codex/skills`,
+update both distributions together unless a test documents the intended difference. In the monorepo, also apply the
 Claude Skills maintenance checklist in `../docs/claude/` before shipping skill or agent changes.
 
 ## License
