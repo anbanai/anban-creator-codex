@@ -383,9 +383,5 @@ path = "__PLUGIN_ROOT__/skills/seednote-writing/SKILL.md"
 enabled = true
 
 [[skills.config]]
-path = "__PLUGIN_ROOT__/skills/humanizer/SKILL.md"
-enabled = true
-
-[[skills.config]]
 path = "__PLUGIN_ROOT__/skills/seednote-visual-design/SKILL.md"
 enabled = true
